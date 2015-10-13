@@ -2,11 +2,16 @@
   (:require
    [clj-time.format :as f]))
 
-(defn parse-it [datetime]
-  (let [multiparser (f/formatter-local "MM/dd/YYYY HH:mm")]
-    (f/parse-local multiparser datetime)))
+(def multiparser (f/formatter-local "MM/dd/YYYY HH:mm"))
+(def custom-formatter (f/formatter-local "ddMMYYYYHHmmss"))
 
-(defn produce-observation-id [datetime substance station-name]
-  (let [parsed-datetime (parse-it datetime)]
-    (let [custom-formatter (f/formatter-local "ddMMYYYYHHmmss")]
-      (str station-name substance (f/unparse-local custom-formatter parsed-datetime)))))
+(defn parsed-datetime [datetime]
+  (f/parse-local multiparser datetime))
+
+(defn unparsed-datetime [datetime]
+  (f/unparse-local custom-formatter datetime))
+
+(defn observation-id [datetime substance station-name]
+  (str station-name substance 
+       (unparsed-datetime datetime)
+       ))

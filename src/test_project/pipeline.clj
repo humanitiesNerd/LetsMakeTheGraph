@@ -12,7 +12,7 @@
      [grafter.vocabularies.foaf :refer :all]
      [test-project.prefix :refer [base-id base-graph base-vocab base-data]]
      [test-project.transform :refer [->integer]]
-     [test-project.supportfunctions :refer [produce-id]]
+     [test-project.supportfunctions :refer [observation-id parsed-datetime]]
      ))
 
 ;; Declare our graph template which will destructure each row and
@@ -47,8 +47,10 @@
   [data-file]
   (-> (read-dataset data-file)
       (make-dataset [:datetime :substance :value :measurement-unit :station :lat :lon])
-      (derive-column :observation-id [:datetime :substance :station] produce-observation-id)
-   ))
+      (mapc {:datetime parsed-datetime})
+      (derive-column :observation-id [:datetime :substance :station] observation-id)
+      )
+  )
 
 ;; Declare a graft so the plugin can find and run it.  A graft is the
 ;; composition of a pipe with graph-fn graph template.
