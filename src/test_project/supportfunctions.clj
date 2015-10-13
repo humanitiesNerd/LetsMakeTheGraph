@@ -1,6 +1,7 @@
 (ns test-project.supportfunctions
   (:require
-   [clj-time.format :as f]))
+   [clj-time.format :as f]
+   [clj-time.core :as t]))
 
 (def multiparser (f/formatter-local "MM/dd/YYYY HH:mm"))
 (def custom-formatter (f/formatter-local "ddMMYYYYHHmmss"))
@@ -15,3 +16,12 @@
   (str station-name substance 
        (unparsed-datetime datetime)
        ))
+
+(defn year [datetime]
+  (t/year datetime))
+
+(defn month [datetime]
+  (t/month datetime))
+
+(defn day [datetime]
+  (t/day datetime))
