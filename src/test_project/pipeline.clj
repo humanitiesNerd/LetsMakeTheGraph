@@ -12,7 +12,7 @@
      [grafter.vocabularies.foaf :refer :all]
      [test-project.prefix :refer [base-id base-graph base-vocab base-data]]
      [test-project.transform :refer [->integer]]
-     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day]]
+     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime]]
      ))
 
 ;; Declare our graph template which will destructure each row and
@@ -52,6 +52,8 @@
       (derive-column :year [:datetime] year)
       (derive-column :month [:datetime] month)
       (derive-column :day [:datetime] day)
+      (mapc {:datetime rdf-datetime})
+      ;(derive-column :rdf-datetime [:datetime] rdf-datetime)
       )
   )
 

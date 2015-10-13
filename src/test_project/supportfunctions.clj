@@ -4,18 +4,22 @@
    [clj-time.core :as t]))
 
 (def multiparser (f/formatter-local "MM/dd/YYYY HH:mm"))
-(def custom-formatter (f/formatter-local "ddMMYYYYHHmmss"))
+(def id-formatter (f/formatter-local "ddMMYYYYHHmmss"))
+(def rdf-formatter (f/formatter-local "MM/dd/YYYY HH:mm:ss"))
 
 (defn parsed-datetime [datetime]
   (f/parse-local multiparser datetime))
 
-(defn unparsed-datetime [datetime]
-  (f/unparse-local custom-formatter datetime))
+(defn unparsed-datetime [formatter datetime]
+  (f/unparse-local formatter datetime))
 
 (defn observation-id [datetime substance station-name]
   (str station-name substance 
-       (unparsed-datetime datetime)
+       (unparsed-datetime id-formatter datetime)
        ))
+
+(defn rdf-datetime [datetime]
+  (unparsed-datetime rdf-formatter datetime))
 
 (defn year [datetime]
   (t/year datetime))
