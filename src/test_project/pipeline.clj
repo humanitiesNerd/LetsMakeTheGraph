@@ -35,6 +35,9 @@
             (graph (base-graph "example")
                    [observation-id
                     [rdf:a ssn:Observation]
+                    [ssn:observationResultTime datetime]
+                    [ssn:isProducedBy station]
+                    [time:year year]
                     ])))
 
 
@@ -69,7 +72,12 @@
   [dataset]
   (-> (read-dataset dataset)
       (deal-with-datetimes)
-      (mapc {:observation-id base-id} )
+      (mapc {:observation-id openarpa-obs
+             :datetime (fn [datetime] (s datetime  xsd:dateTime))
+             :station openarpa-sens
+             :year (fn [year] (s (str year) time:year))
+             }
+            )
       ))
 
 ;; Declare a graft so the plugin can find and run it.  A graft is the
