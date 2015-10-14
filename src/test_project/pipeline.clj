@@ -1,3 +1,4 @@
+
 (ns test-project.pipeline
     (:require
      [grafter.tabular :refer [defpipe defgraft column-names columns rows
@@ -10,6 +11,7 @@
      [grafter.rdf.templater :refer [graph]]
      [grafter.vocabularies.rdf :refer :all]
      [grafter.vocabularies.foaf :refer :all]
+     [test-project.vocabularies :refer :all]
      [test-project.prefix :refer [base-id base-graph base-vocab base-data]]
      [test-project.transform :refer [->integer]]
      [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime]]
@@ -19,7 +21,7 @@
 ;; convert it into an RDF graph.  This will be the final step in our
 ;; pipeline definition.
 
-(def make-graph
+(def make-graph-original
   (graph-fn [{:keys [name sex age person-uri gender]}]
             (graph (base-graph "example")
                    [person-uri
@@ -27,6 +29,13 @@
                     [foaf:gender sex]
                     [foaf:age age]
                     [foaf:name (s name)]])))
+
+(def make-graph
+  (graph-fn [{:keys [datetime substance value measurement-unit station lat lon observation-id year month day]}]
+            (graph (base-graph "example")
+                   [observation-id
+                    [rdf:a ssn:Observation]
+                    ])))
 
 
 ;; Declare a pipe so the plugin can find and run it.  It's just a
@@ -53,12 +62,21 @@
       (derive-column :month [:datetime] month)
       (derive-column :day [:datetime] day)
       (mapc {:datetime rdf-datetime})
-      ;(derive-column :rdf-datetime [:datetime] rdf-datetime)
       )
   )
+
+(defpipe rdf-datatypes
+  [dataset]
+  (-> (read-dataset dataset)
+      (deal-with-datetimes)
+      (mapc {:observation-id base-id} )
+      ))
 
 ;; Declare a graft so the plugin can find and run it.  A graft is the
 ;; composition of a pipe with graph-fn graph template.
 (defgraft convert-persons-data-to-graph
   "Pipeline to convert the tabular persons data sheet into graph data."
-  convert-persons-data make-graph)
+  convert-persons-data make-graph-original)
+
+(defgraft csv-to-graph
+  rdf-datatypes make-graph)
