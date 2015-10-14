@@ -22,3 +22,5 @@
 
 (def time (prefixer "http://www.w3.org/2006/time#"))
 (def time:year (time "year"))
+(def time:month (time "month"))
+(def time:day (time "day"))

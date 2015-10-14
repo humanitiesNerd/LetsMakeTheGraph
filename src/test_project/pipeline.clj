@@ -38,6 +38,9 @@
                     [ssn:observationResultTime datetime]
                     [ssn:isProducedBy station]
                     [time:year year]
+                    [time:month month]
+                    [time:day day]
+                    
                     ])))
 
 
@@ -76,6 +79,8 @@
              :datetime (fn [datetime] (s datetime  xsd:dateTime))
              :station openarpa-sens
              :year (fn [year] (s (str year) time:year))
+             :month (fn [month] (s (str month) time:month))
+             :day (fn [day] (s (str day) time:day))
              }
             )
       ))
