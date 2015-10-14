@@ -19,8 +19,15 @@
 
 (def xsd:dateTime (xsd "dateTime"))
 (def xsd:gYear (xsd "gYear"))
+(def xsd:gMonth (xsd "gMonth"))
+(def xsd:gDay (xsd "gDay"))
+(def xsd:time (xsd "time"))
 
 (def time (prefixer "http://www.w3.org/2006/time#"))
 (def time:year (time "year"))
 (def time:month (time "month"))
 (def time:day (time "day"))
+(def time:inDateTime (time "inDateTime"))
+
+(def basic (prefixer "http://def.seegrid.csiro.au/isotc211/iso19103/2005/basic#"))
+(def basic:uom (basic "uom"))

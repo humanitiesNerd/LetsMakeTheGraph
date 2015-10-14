@@ -14,7 +14,7 @@
      [test-project.vocabularies :refer :all]
      [test-project.prefix :refer [base-id base-graph base-vocab base-data]]
      [test-project.transform :refer [->integer]]
-     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime]]
+     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime daytime]]
      ))
 
 ;; Declare our graph template which will destructure each row and
@@ -31,7 +31,7 @@
                     [foaf:name (s name)]])))
 
 (def make-graph
-  (graph-fn [{:keys [datetime substance value measurement-unit station lat lon observation-id year month day]}]
+  (graph-fn [{:keys [datetime substance value measurement-unit station lat lon observation-id year month day daytime]}]
             (graph (base-graph "example")
                    [observation-id
                     [rdf:a ssn:Observation]
@@ -40,8 +40,13 @@
                     [time:year year]
                     [time:month month]
                     [time:day day]
-                    
-                    ])))
+                    [time:inDateTime daytime]
+                    [ssn:observedProperty substance]
+                    [ssn:hasValue value]
+                    [basic:uom measurement-unit]
+                    ]
+                   [station
+                    [ssn:hasOutput observation-id]])))
 
 
 ;; Declare a pipe so the plugin can find and run it.  It's just a
@@ -67,6 +72,7 @@
       (derive-column :year [:datetime] year)
       (derive-column :month [:datetime] month)
       (derive-column :day [:datetime] day)
+      (derive-column :daytime [:datetime] daytime)
       (mapc {:datetime rdf-datetime})
       )
   )
@@ -78,9 +84,13 @@
       (mapc {:observation-id openarpa-obs
              :datetime (fn [datetime] (s datetime  xsd:dateTime))
              :station openarpa-sens
-             :year (fn [year] (s (str year) time:year))
-             :month (fn [month] (s (str month) time:month))
-             :day (fn [day] (s (str day) time:day))
+             :year (fn [year] (s (str year) xsd:gYear))
+             :month (fn [month] (s (str month) xsd:gMonth))
+             :day (fn [day] (s (str day) xsd:gDay))
+             :daytime (fn [daytime] (s daytime xsd:time))
+             :substance s
+             :value s
+             :measurement-unit s
              }
             )
       ))

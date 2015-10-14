@@ -6,6 +6,7 @@
 (def multiparser (f/formatter-local "MM/dd/YYYY HH:mm"))
 (def id-formatter (f/formatter-local "ddMMYYYYHHmmss"))
 (def rdf-formatter (f/formatter-local "MM/dd/YYYY HH:mm:ss"))
+(def daytime-formatter (f/formatter-local "HH:mm:ss"))
 
 (defn parsed-datetime [datetime]
   (f/parse-local multiparser datetime))
@@ -29,3 +30,8 @@
 
 (defn day [datetime]
   (t/day datetime))
+
+
+(defn daytime [datetime]
+  (unparsed-datetime daytime-formatter datetime))
+
