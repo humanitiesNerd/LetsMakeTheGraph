@@ -31,3 +31,7 @@
 
 (def basic (prefixer "http://def.seegrid.csiro.au/isotc211/iso19103/2005/basic#"))
 (def basic:uom (basic "uom"))
+
+(def dbpedia (prefixer "http://dbpedia.org/resource/"))
+(def dbpedia-it (prefixer "http://it.dbpedia.org/resource/"))
+(def openarpa-substance (prefixer "http://openpuglia.org/lod/openarpa/"))

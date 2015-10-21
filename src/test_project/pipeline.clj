@@ -14,7 +14,7 @@
      [test-project.vocabularies :refer :all]
      [test-project.prefix :refer [base-id base-graph base-vocab base-data]]
      [test-project.transform :refer [->integer]]
-     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime daytime]]
+     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime daytime substance-rdf]]
      ))
 
 ;; Declare our graph template which will destructure each row and
@@ -73,14 +73,22 @@
       (derive-column :month [:datetime] month)
       (derive-column :day [:datetime] day)
       (derive-column :daytime [:datetime] daytime)
-      (mapc {:datetime rdf-datetime})
+      (mapc {:datetime rdf-datetime
+             })
       )
   )
+
+(defpipe reconciliation
+  [dataset]
+  (-> (read-dataset dataset)
+      (deal-with-datetimes)
+      (mapc {:substance reconciliation}) ;reconciliation returns a map
+      ))
 
 (defpipe rdf-datatypes
   [dataset]
   (-> (read-dataset dataset)
-      (deal-with-datetimes)
+      (reconciliation)
       (mapc {:observation-id openarpa-obs
              :datetime (fn [datetime] (s datetime  xsd:dateTime))
              :station openarpa-sens
@@ -88,7 +96,7 @@
              :month (fn [month] (s (str month) xsd:gMonth))
              :day (fn [day] (s (str day) xsd:gDay))
              :daytime (fn [daytime] (s daytime xsd:time))
-             :substance s
+             :substance substance-rdf 
              :value s
              :measurement-unit s
              }
