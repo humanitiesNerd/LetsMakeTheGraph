@@ -36,7 +36,7 @@
 (defn daytime [datetime]
   (unparsed-datetime daytime-formatter datetime))
 
-(def reconciliation
+(def reconciliated-values
   {"NO2" {:denomination "NO2"
           :dbpedia "Nitrogen_dioxide"
           :dbpedia-it "Diossido_di_azoto"}
@@ -60,7 +60,7 @@
            :dbpedia-it "PM10" }
    "SO2" {:denomination "SO2"
           :dbpedia "Sulfur_dioxide"
-          :dbpedia-it "Diossido_di_zolfo" }
+          :dbpedia-it "Diossido_di_zolfo"}
    "CH4" {:denomination "CH4"
           :openarpa "CH4"}
    "H2S" {:denomination "H2S"
