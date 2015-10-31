@@ -22,17 +22,16 @@
 ;; convert it into an RDF graph.  This will be the final step in our
 ;; pipeline definition.
 
-(def make-graph-original
-  (graph-fn [{:keys [name sex age person-uri gender]}]
-            (graph (base-graph "example")
-                   [person-uri
-                    [rdf:a foaf:Person]
-                    [foaf:gender sex]
-                    [foaf:age age]
-                    [foaf:name (s name)]])))
+(defn practicable [URL]
+  (not (.endsWith URL "absent")))
+
 
 (def make-graph
   (graph-fn [{:keys [datetime substance dbpedia dbpedia-it openarpa value measurement-unit station lat lon observation-id year month day daytime]}]
+            (defn turtle-template [skeleton inputs] ; inputs is a vector like this [dbpedia dbpedia-it openarpa]
+              (let [practicables (filter practicable inputs)]
+                (mapv (fn [practicable] [ssn:observedProperty practicable])  practicables)))
+            
             (graph (base-graph "example")
                    [observation-id
                     [rdf:a ssn:Observation]
@@ -119,9 +118,6 @@
 
 ;; Declare a graft so the plugin can find and run it.  A graft is the
 ;; composition of a pipe with graph-fn graph template.
-(defgraft convert-persons-data-to-graph
-  "Pipeline to convert the tabular persons data sheet into graph data."
-  convert-persons-data make-graph-original)
 
 (defgraft csv-to-graph
   rdf-datatypes make-graph)
