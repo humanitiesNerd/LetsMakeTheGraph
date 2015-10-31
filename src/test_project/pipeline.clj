@@ -14,7 +14,7 @@
      [test-project.vocabularies :refer :all]
      [test-project.prefix :refer [base-id base-graph base-vocab base-data]]
      [test-project.transform :refer [->integer]]
-     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime daytime substance-rdf reconciliated-values]
+     [test-project.supportfunctions :refer [observation-id parsed-datetime year month day rdf-datetime daytime reconciliated-values]
       ]
      ))
 
@@ -32,7 +32,7 @@
                     [foaf:name (s name)]])))
 
 (def make-graph
-  (graph-fn [{:keys [datetime substance value measurement-unit station lat lon observation-id year month day daytime]}]
+  (graph-fn [{:keys [datetime substance dbpedia dbpedia-it openarpa value measurement-unit station lat lon observation-id year month day daytime]}]
             (graph (base-graph "example")
                    [observation-id
                     [rdf:a ssn:Observation]
@@ -43,6 +43,9 @@
                     [time:day day]
                     [time:inDateTime daytime]
                     [ssn:observedProperty substance]
+                    [ssn:observedProperty dbpedia]
+                    [ssn:observedProperty dbpedia-it]
+                    [ssn:observedProperty openarpa]
                     [ssn:hasValue value]
                     [basic:uom measurement-unit]
                     ]
@@ -83,12 +86,14 @@
   (-> (read-dataset dataset)
       (deal-with-datetimes)
       (derive-column :dbpedia [:substance]
-                     (fn [substance] (println (type substance) " " substance)
-                       (get-in reconciliated-values [substance :dbpedia])))
+                     (fn [substance] 
+                       (get-in reconciliated-values [substance :dbpedia] "absent")))
       (derive-column :dbpedia-it [:substance]
-                     (fn [substance] (get-in reconciliated-values [substance :dbpedia-it])))
+                     (fn [substance]
+                       (get-in reconciliated-values [substance :dbpedia-it] "absent")))
       (derive-column :openarpa [:substance]
-                     (fn [substance] (get-in reconciliated-values [substance :openarpa])))      
+                     (fn [substance]
+                       (get-in reconciliated-values [substance :openarpa] "absent")))      
       ))
 
 (defpipe rdf-datatypes
@@ -102,7 +107,10 @@
              :month (fn [month] (s (str month) xsd:gMonth))
              :day (fn [day] (s (str day) xsd:gDay))
              :daytime (fn [daytime] (s daytime xsd:time))
-             :substance s 
+             :substance s
+             :dbpedia (fn [substance] (dbpedia substance))
+             :dbpedia-it (fn [substance] (dbpedia-it substance))
+             :openarpa (fn [substance] (openarpa-substance substance))
              :value s
              :measurement-unit s
              }

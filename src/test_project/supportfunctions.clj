@@ -2,11 +2,11 @@
   (:require
    [clj-time.format :as f]
    [clj-time.core :as t]
-   [test-project.vocabularies :refer [dbpedia dbpedia-it openarpa-substance]]))
+   ))
 
-(def multiparser (f/formatter-local "MM/dd/YYYY HH:mm"))
+(def multiparser (f/formatter-local "dd/MM/YYYY HH:mm"))
 (def id-formatter (f/formatter-local "ddMMYYYYHHmmss"))
-(def rdf-formatter (f/formatter-local "MM/dd/YYYY HH:mm:ss"))
+(def rdf-formatter (f/formatter-local "dd/MM/YYYY HH:mm:ss"))
 (def daytime-formatter (f/formatter-local "HH:mm:ss"))
 
 (defn parsed-datetime [datetime]
@@ -69,12 +69,5 @@
            :openarpa "NMHC"}
    })
 
-(defn substance-rdf [substance-map]
-  (let [solutions [(substance-map :denomination)]]
-    (if-let [in-dbpedia (substance-map :dbpedia)]
-      (conj solutions (dbpedia in-dbpedia)))
-    (if-let [in-dbpedia-it (substance-map :dbpedia-it)]
-      (conj solutions (dbpedia-it in-dbpedia-it)))
-    (if-let [in-openarpa (substance-map :openarpa)]
-      (conj solutions (openarpa-substance in-openarpa)))
-    solutions))
+
+
