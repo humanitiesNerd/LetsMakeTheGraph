@@ -25,29 +25,35 @@
 (defn practicable [URL]
   (not (.endsWith URL "absent")))
 
+(def turtle-template-skeleton
+  [observation-id
+   [rdf:a ssn:Observation]
+   [ssn:observationResultTime datetime]
+   [ssn:isProducedBy station]
+   [time:year year]
+   [time:month month]
+   [time:day day]
+   [time:inDateTime daytime]
+   [ssn:observedProperty substance]
+   ;[ssn:observedProperty dbpedia]
+   ;[ssn:observedProperty dbpedia-it]
+   ;[ssn:observedProperty openarpa]
+   [ssn:hasValue value]
+   [basic:uom measurement-unit]
+   ]
+)
+
+(defn turtle-template [skeleton inputs] ; inputs is a vector like this [dbpedia dbpedia-it openarpa]
+  (let [practicables (filter practicable inputs)]
+    (into skeleton (map (fn [practicable] [ssn:observedProperty practicable])  practicables))))
+
 
 (def make-graph
   (graph-fn [{:keys [datetime substance dbpedia dbpedia-it openarpa value measurement-unit station lat lon observation-id year month day daytime]}]
-            (defn turtle-template [skeleton inputs] ; inputs is a vector like this [dbpedia dbpedia-it openarpa]
-              (let [practicables (filter practicable inputs)]
-                (mapv (fn [practicable] [ssn:observedProperty practicable])  practicables)))
-            
             (graph (base-graph "example")
-                   [observation-id
-                    [rdf:a ssn:Observation]
-                    [ssn:observationResultTime datetime]
-                    [ssn:isProducedBy station]
-                    [time:year year]
-                    [time:month month]
-                    [time:day day]
-                    [time:inDateTime daytime]
-                    [ssn:observedProperty substance]
-                    [ssn:observedProperty dbpedia]
-                    [ssn:observedProperty dbpedia-it]
-                    [ssn:observedProperty openarpa]
-                    [ssn:hasValue value]
-                    [basic:uom measurement-unit]
-                    ]
+                   (turtle-template
+                    turtle-template-skeleton
+                    [dbpedia dbpedia-it openarpa])
                    [station
                     [ssn:hasOutput observation-id]])))
 
